@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:finance_tracker/screens/add_expense/views/add_expense.dart';
 import 'package:finance_tracker/screens/home/views/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -56,7 +57,15 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: FloatingActionButton(
         mini: true,
         onPressed: () {
-          // Action for the floating action button
+          Navigator.push(
+            context,
+            MaterialPageRoute<void>(
+              builder: (
+                BuildContext context,
+              ) =>
+                  const AddExpense(),
+            ),
+          );
         },
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15), //rounding effect on +
