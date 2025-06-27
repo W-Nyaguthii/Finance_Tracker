@@ -52,7 +52,7 @@ class MainScreen extends StatelessWidget {
                               color: Theme.of(context).colorScheme.outline),
                         ),
                         Text(
-                          "Prim",
+                          "User_Name",
                           style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -159,7 +159,7 @@ class MainScreen extends StatelessWidget {
                                   shape: BoxShape.circle),
                               child: const Center(
                                   child: Icon(
-                                CupertinoIcons.arrow_down,
+                                CupertinoIcons.arrow_up,
                                 size: 12,
                                 color: Colors.red,
                               )),
