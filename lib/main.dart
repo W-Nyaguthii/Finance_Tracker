@@ -1,4 +1,7 @@
-import 'package:bloc/bloc.dart';
+import 'package:expense_repository/expense_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'screens/add_expense/blocs/create_expense_bloc/create_expense_bloc.dart';
+import 'screens/budgets/blocs/bloc/budget_bloc.dart';
 import 'simple_bloc_observer.dart';
 import 'package:flutter/material.dart';
 import 'app.dart';
@@ -13,5 +16,15 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   Bloc.observer = SimpleBlocObserver();
-  runApp(const MyApp());
+  runApp(MultiBlocProvider(
+    providers: [
+      BlocProvider(
+        create: (context) => CreateExpenseBloc(FirebaseExpenseRepo()),
+      ),
+      BlocProvider(
+        create: (context) => BudgetBloc(),
+      ),
+    ],
+    child: const MyApp(),
+  ));
 }
