@@ -20,6 +20,7 @@ class BudgetScreenState extends State<BudgetScreen> {
   void _showSpendDialog(BuildContext context, Budget budget) {
     final TextEditingController amountController = TextEditingController();
 
+// Show dialog to record amount used of set budget
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -27,14 +28,14 @@ class BudgetScreenState extends State<BudgetScreen> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Current spent: \$${budget.spent.toStringAsFixed(2)}'),
-            Text('Budget: \$${budget.amount.toStringAsFixed(2)}'),
+            Text('Current spent:Ksh ${budget.spent.toStringAsFixed(2)}'),
+            Text('Budget:Ksh ${budget.amount.toStringAsFixed(2)}'),
             SizedBox(height: 20),
             TextFormField(
               controller: amountController,
               decoration: InputDecoration(
                 labelText: 'Expense Amount',
-                prefixText: '\$',
+                prefixText: 'Ksh',
                 border: OutlineInputBorder(),
               ),
               keyboardType: TextInputType.number,
@@ -191,7 +192,7 @@ class BudgetScreenState extends State<BudgetScreen> {
                                                     ),
                                                   ),
                                                   subtitle: Text(
-                                                    "Amount: \$${budget.amount.toStringAsFixed(2)} \nCategory: ${budget.category}",
+                                                    "Amount: Ksh ${budget.amount.toStringAsFixed(2)} \nCategory: ${budget.category}",
                                                     style:
                                                         TextStyle(fontSize: 14),
                                                   ),
@@ -293,14 +294,14 @@ class BudgetScreenState extends State<BudgetScreen> {
                                                 MainAxisAlignment.spaceBetween,
                                             children: [
                                               Text(
-                                                "Spent: \$${budget.spent.toStringAsFixed(2)}",
+                                                "Spent:Ksh ${budget.spent.toStringAsFixed(2)}",
                                                 style: TextStyle(
                                                   fontSize: 13,
                                                   color: Colors.grey.shade700,
                                                 ),
                                               ),
                                               Text(
-                                                "Remaining: \$${amountRemaining.toStringAsFixed(2)}",
+                                                "Remaining:Ksh ${amountRemaining.toStringAsFixed(2)}",
                                                 style: TextStyle(
                                                   fontSize: 13,
                                                   fontWeight: FontWeight.w500,

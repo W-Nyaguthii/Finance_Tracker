@@ -88,7 +88,7 @@ class BudgetPopupState extends State<BudgetPopup> {
                       controller: _amountController,
                       decoration: InputDecoration(
                         labelText: 'Amount',
-                        prefixText: '\$',
+                        prefixText: 'Ksh',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
