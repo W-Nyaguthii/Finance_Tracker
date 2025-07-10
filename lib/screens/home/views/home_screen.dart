@@ -52,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: index == 0 ? selectedItem : unselectedItem),
                       label: 'Home'),
                   BottomNavigationBarItem(
-                      icon: Icon(CupertinoIcons.graph_square_fill,
+                      icon: Icon(Icons.stacked_line_chart,
                           color: index == 1 ? selectedItem : unselectedItem),
                       label: 'Stats'),
                   BottomNavigationBarItem(
@@ -127,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
               //section imports all the other screen views
               const StatScreen(),
               const BudgetScreen(),
-              const More(),
+              const MoreScreen(),
               //    const SavingsScreen(),
               //  const LearningScreen(),
             ],
