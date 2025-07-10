@@ -39,3 +39,4 @@ class CategoryEntity {
 // reconstructs the entity from a Firestore document. 
 // This allows for easy integration with Firestore, enabling CRUD operations
 // on category entities in a structured way.
+

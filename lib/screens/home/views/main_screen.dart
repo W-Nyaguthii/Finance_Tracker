@@ -1,13 +1,80 @@
 import 'dart:math';
 
 import 'package:expense_repository/expense_repository.dart';
+import 'package:finance_tracker/screens/home/blocs/get_expenses_bloc/get_expenses_bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:finance_tracker/screens/add_expense/blocs/create_expense_bloc/create_expense_bloc.dart';
 
 class MainScreen extends StatelessWidget {
   final List<Expense> expenses;
   const MainScreen(this.expenses, {super.key});
+
+  // Calculate total income (positive amounts)
+  double get totalIncome {
+    return expenses
+        .where((expense) => expense.amount > 0 || expense.type == "Income")
+        .fold(0, (sum, expense) => sum + expense.amount.abs());
+  }
+
+  // Calculate total expenses (negative amounts)
+  double get totalExpenses {
+    return expenses
+        .where((expense) => expense.amount < 0 || expense.type == "Expense")
+        .fold(0, (sum, expense) => sum + expense.amount.abs());
+  }
+
+  // Calculate total balance
+  double get totalBalance {
+    return expenses.fold(0, (sum, expense) => sum + expense.amount);
+  }
+
+  // Group expenses by date
+  Map<String, List<Expense>> get groupedExpenses {
+    Map<String, List<Expense>> grouped = {};
+
+    for (var expense in expenses) {
+      String dateKey = DateFormat('dd/MM/yyyy').format(expense.date);
+      if (!grouped.containsKey(dateKey)) {
+        grouped[dateKey] = [];
+      }
+      grouped[dateKey]!.add(expense);
+    }
+
+    // Sort the map by date (most recent first)
+    var sortedEntries = grouped.entries.toList()
+      ..sort((a, b) {
+        DateTime dateA = DateFormat('dd/MM/yyyy').parse(a.key);
+        DateTime dateB = DateFormat('dd/MM/yyyy').parse(b.key);
+        return dateB.compareTo(dateA);
+      });
+
+    return Map.fromEntries(sortedEntries);
+  }
+
+  // Calculate daily total for a group of expenses
+  double getDailyTotal(List<Expense> dayExpenses) {
+    return dayExpenses.fold(0, (sum, expense) => sum + expense.amount);
+  }
+
+  // Get day name (Today, Yesterday, or day of week)
+  String getDayLabel(String dateString) {
+    DateTime date = DateFormat('dd/MM/yyyy').parse(dateString);
+    DateTime now = DateTime.now();
+    DateTime today = DateTime(now.year, now.month, now.day);
+    DateTime yesterday = today.subtract(const Duration(days: 1));
+    DateTime expenseDate = DateTime(date.year, date.month, date.day);
+
+    if (expenseDate == today) {
+      return 'Today';
+    } else if (expenseDate == yesterday) {
+      return 'Yesterday';
+    } else {
+      return DateFormat('EEEE').format(date);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -98,9 +165,9 @@ class MainScreen extends StatelessWidget {
                         fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 12),
-                  const Text(
-                    '\$ 4800.00',
-                    style: TextStyle(
+                  Text(
+                    'Ksh ${totalBalance.toStringAsFixed(2)}',
+                    style: const TextStyle(
                         fontSize: 40,
                         color: Colors.white,
                         fontWeight: FontWeight.bold),
@@ -127,10 +194,10 @@ class MainScreen extends StatelessWidget {
                               )),
                             ),
                             const SizedBox(width: 8),
-                            const Column(
+                            Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
+                                const Text(
                                   'Income',
                                   style: TextStyle(
                                       fontSize: 14,
@@ -138,8 +205,8 @@ class MainScreen extends StatelessWidget {
                                       fontWeight: FontWeight.w400),
                                 ),
                                 Text(
-                                  'Ksh 2500.00',
-                                  style: TextStyle(
+                                  'Ksh ${totalIncome.toStringAsFixed(2)}',
+                                  style: const TextStyle(
                                       fontSize: 14,
                                       color: Colors.white,
                                       fontWeight: FontWeight.w600),
@@ -164,10 +231,10 @@ class MainScreen extends StatelessWidget {
                               )),
                             ),
                             const SizedBox(width: 8),
-                            const Column(
+                            Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
+                                const Text(
                                   'Expenses',
                                   style: TextStyle(
                                       fontSize: 14,
@@ -175,8 +242,8 @@ class MainScreen extends StatelessWidget {
                                       fontWeight: FontWeight.w400),
                                 ),
                                 Text(
-                                  'Ksh 800.00',
-                                  style: TextStyle(
+                                  'Ksh ${totalExpenses.toStringAsFixed(2)}',
+                                  style: const TextStyle(
                                       fontSize: 14,
                                       color: Colors.white,
                                       fontWeight: FontWeight.w600),
@@ -192,6 +259,7 @@ class MainScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 40),
+            // Transactions Section
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -215,83 +283,199 @@ class MainScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 20),
+
+            // Grouped Expense List with BlocConsumer
             Expanded(
-              child: ListView.builder(
-                  itemCount: expenses.length,
-                  itemBuilder: (context, int i) {
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12)),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Stack(
-                                    alignment: Alignment.center,
-                                    children: [
-                                      Container(
-                                        width: 50,
-                                        height: 50,
-                                        decoration: BoxDecoration(
-                                            color: Color(
-                                                expenses[i].category.color),
-                                            shape: BoxShape.circle),
-                                      ),
-                                      Image.asset(
-                                        'assets/${expenses[i].category.icon}.png',
-                                        scale: 2,
-                                        color: Colors.white,
-                                      )
-                                    ],
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Text(
-                                    expenses[i].category.name,
-                                    style: TextStyle(
-                                        fontSize: 14,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurface,
-                                        fontWeight: FontWeight.w500),
-                                  ),
-                                ],
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Text(
-                                    "\$${expenses[i].amount}.00",
-                                    style: TextStyle(
-                                        fontSize: 14,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurface,
-                                        fontWeight: FontWeight.w400),
-                                  ),
-                                  Text(
-                                    DateFormat('dd/MM/yyyy')
-                                        .format(expenses[i].date),
-                                    style: TextStyle(
-                                        fontSize: 14,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .outline,
-                                        fontWeight: FontWeight.w400),
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
+              child: BlocConsumer<CreateExpenseBloc, CreateExpenseState>(
+                listener: (context, state) {
+                  if (state is DeleteExpenseSuccess) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text('Expense deleted successfully!')),
+                    );
+                    // Automatically refresh the expense list
+                    context.read<GetExpensesBloc>().add(GetExpenses());
+                  } else if (state is DeleteExpenseFailure) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text('Failed to delete expense!')),
+                    );
+                  }
+                },
+                builder: (context, state) {
+                  if (expenses.isEmpty) {
+                    return const Center(
+                      child: Text(
+                        'No transactions yet',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey,
                         ),
                       ),
                     );
-                  }),
+                  }
+
+                  return ListView.builder(
+                    itemCount: groupedExpenses.length,
+                    itemBuilder: (context, index) {
+                      String dateKey = groupedExpenses.keys.elementAt(index);
+                      List<Expense> dayExpenses = groupedExpenses[dateKey]!;
+                      double dailyTotal = getDailyTotal(dayExpenses);
+                      String dayLabel = getDayLabel(dateKey);
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Date Header
+                          Padding(
+                            padding:
+                                const EdgeInsets.only(bottom: 12.0, top: 8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      dayLabel,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        //  fontWeight: FontWeight.bold,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurface,
+                                      ),
+                                    ),
+                                    if (dayLabel != 'Today' &&
+                                        dayLabel != 'Yesterday')
+                                      Text(
+                                        dateKey,
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .outline,
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                                Text(
+                                  'Ksh ${dailyTotal.abs().toStringAsFixed(2)}',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: dailyTotal < 0
+                                        ? Colors.red
+                                        : Colors.green,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          // Expenses for this day
+                          ...dayExpenses.map((expense) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(12)),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Stack(
+                                            alignment: Alignment.center,
+                                            children: [
+                                              Container(
+                                                width: 50,
+                                                height: 50,
+                                                decoration: BoxDecoration(
+                                                    color: Color(
+                                                        expense.category.color),
+                                                    shape: BoxShape.circle),
+                                              ),
+                                              Image.asset(
+                                                'assets/${expense.category.icon}.png',
+                                                scale: 2,
+                                                color: Colors.white,
+                                              )
+                                            ],
+                                          ),
+                                          const SizedBox(width: 12),
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                expense.category.name,
+                                                style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onSurface,
+                                                    fontWeight:
+                                                        FontWeight.w500),
+                                              ),
+                                              Text(
+                                                expense.type,
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .outline,
+                                                    fontWeight:
+                                                        FontWeight.w400),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            "Ksh ${expense.amount.abs().toStringAsFixed(2)}",
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                color: expense.amount < 0
+                                                    ? Colors.red
+                                                    : Colors.green,
+                                                fontWeight: FontWeight.w600),
+                                          ),
+                                          IconButton(
+                                            icon: Icon(
+                                              Icons.delete,
+                                              color: const Color.fromARGB(
+                                                  255, 22, 22, 22),
+                                            ),
+                                            onPressed: () {
+                                              context
+                                                  .read<CreateExpenseBloc>()
+                                                  .add(DeleteExpense(
+                                                      expense.expenseId));
+                                            },
+                                          ),
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          }),
+
+                          const SizedBox(height: 16),
+                        ],
+                      );
+                    },
+                  );
+                },
+              ),
             )
           ],
         ),
