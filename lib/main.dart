@@ -1,4 +1,5 @@
 import 'package:expense_repository/expense_repository.dart';
+import 'package:finance_tracker/screens/savings/bloc/bloc/savings_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'screens/add_expense/blocs/create_expense_bloc/create_expense_bloc.dart';
 import 'screens/budgets/blocs/bloc/budget_bloc.dart';
@@ -23,6 +24,9 @@ void main() async {
       ),
       BlocProvider(
         create: (context) => BudgetBloc(),
+      ),
+      BlocProvider(
+        create: (context) => SavingsBloc(),
       ),
     ],
     child: const MyApp(),

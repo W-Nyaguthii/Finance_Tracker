@@ -1,3 +1,5 @@
+import 'package:finance_tracker/screens/learn/learn.dart';
+import 'package:finance_tracker/screens/savings/views/savings.dart';
 import 'package:flutter/material.dart';
 
 class MoreScreen extends StatelessWidget {
@@ -143,29 +145,42 @@ class MoreScreen extends StatelessWidget {
                       subtitle: 'Your spending statistics all in one place',
                     ), */
                     _buildActionItem(
+                      context: context,
                       icon: Icons.auto_stories,
                       title: 'Learn',
                       subtitle: 'Ask AI',
+                      onTap: () =>
+                          _navigateToScreen(context, const LearningScreen()),
                     ),
                     _buildActionItem(
+                      context: context,
                       icon: Icons.savings,
                       title: 'Savings',
                       subtitle: 'Track your savings goals',
+                      onTap: () {
+                        _navigateToScreen(context, const SavingsScreen());
+                      },
                     ),
                     _buildActionItem(
+                      context: context,
                       icon: Icons.notifications_outlined,
                       title: 'Notifications',
                       subtitle: '',
+                      onTap: () {}, //placeholder for notifications action
                     ),
                     _buildActionItem(
+                      context: context,
                       icon: Icons.refresh,
                       title: 'Login',
                       subtitle: '',
+                      onTap: () {}, // Placeholder for login action
                     ),
                     _buildActionItem(
+                      context: context,
                       icon: Icons.calendar_today,
                       title: 'Calendar',
                       subtitle: '',
+                      onTap: () {}, // Placeholder for calendar action
                     ),
                   ],
                 ),
@@ -177,65 +192,77 @@ class MoreScreen extends StatelessWidget {
     );
   }
 
+  // Helper method for navigation
+  void _navigateToScreen(BuildContext context, Widget screen) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => screen),
+    );
+  }
+
   Widget _buildActionItem({
+    required BuildContext context,
     required IconData icon,
     required String title,
     required String subtitle,
+    required VoidCallback onTap,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[300]!),
-        boxShadow: [
-          BoxShadow(
-            // ignore: deprecated_member_use
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 3,
-            offset: const Offset(0, 2),
+    return GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.grey[300]!),
+            boxShadow: [
+              BoxShadow(
+                // ignore: deprecated_member_use
+                color: Colors.grey.withOpacity(0.1),
+                spreadRadius: 1,
+                blurRadius: 3,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Icon(
-            icon,
-            color: Colors.black,
-            size: 20,
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                if (subtitle.isNotEmpty) ...[
-                  const SizedBox(height: 2),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 11,
+          child: Row(
+            children: [
+              Icon(
+                icon,
+                color: Colors.black,
+                size: 20,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ],
-            ),
+                    if (subtitle.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        subtitle,
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 11,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-    );
+        ));
   }
 }
