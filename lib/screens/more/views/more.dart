@@ -170,7 +170,7 @@ class MoreScreen extends StatelessWidget {
                     ),
                     _buildActionItem(
                       context: context,
-                      icon: Icons.refresh,
+                      icon: Icons.login,
                       title: 'Login',
                       subtitle: '',
                       onTap: () {}, // Placeholder for login action
@@ -217,8 +217,7 @@ class MoreScreen extends StatelessWidget {
             border: Border.all(color: Colors.grey[300]!),
             boxShadow: [
               BoxShadow(
-                // ignore: deprecated_member_use
-                color: Colors.grey.withOpacity(0.1),
+                color: Colors.grey.withAlpha((0.1 * 255).toInt()),
                 spreadRadius: 1,
                 blurRadius: 3,
                 offset: const Offset(0, 2),
