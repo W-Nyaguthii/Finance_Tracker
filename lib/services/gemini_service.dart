@@ -1,7 +1,8 @@
 import 'package:google_generative_ai/google_generative_ai.dart';
 
 class GeminiService {
-  static const String _apiKey = 'AIzaSyCY7wjLSk2SIut_taA0tX6ov0-lLA9xPiQ';
+  static const String _apiKey =
+      'your-API-key-here'; // Replace with your actual API key
   late final GenerativeModel _model;
 
   GeminiService() {
