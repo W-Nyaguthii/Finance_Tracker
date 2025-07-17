@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../add_expense/blocs/create_expense_bloc/create_expense_bloc.dart';
 import '../../budgets/views/budgets.dart';
-import '../../stats/stats.dart';
+import '../../stats/views/stats.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -44,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 showUnselectedLabels: true,
                 elevation: 3,
                 selectedItemColor: selectedItem, //Highlight selected icon
-                unselectedItemColor: unselectedItem, //Gray out unselected items
+                unselectedItemColor: unselectedItem, //Grey out unselected items
 
                 items: [
                   BottomNavigationBarItem(
@@ -128,8 +128,6 @@ class _HomeScreenState extends State<HomeScreen> {
               const StatScreen(),
               const BudgetScreen(),
               const MoreScreen(),
-              //    const SavingsScreen(),
-              //  const LearningScreen(),
             ],
           ),
         );

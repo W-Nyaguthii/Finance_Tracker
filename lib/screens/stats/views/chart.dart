@@ -1,29 +1,13 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-
-// Transaction model
-class Transaction {
-  final String category;
-  final double amount;
-  final bool isExpense;
-  final String date;
-  final IconData? icon;
-
-  Transaction({
-    required this.category,
-    required this.amount,
-    required this.isExpense,
-    required this.date,
-    this.icon,
-  });
-}
+import 'package:expense_repository/expense_repository.dart';
 
 class MyChart extends StatefulWidget {
-  final List<Transaction> transactions;
+  final List<Expense> expenses;
 
   const MyChart({
     super.key,
-    required this.transactions,
+    required this.expenses,
   });
 
   @override
@@ -60,46 +44,47 @@ class _MyChartState extends State<MyChart> {
   }
 
   List<PieChartSectionData> showingSections() {
-    // Group transactions by category
-    final transactionsByCategory = <String, double>{};
+    // Group expenses by category
+    final expensesByCategory = <String, double>{};
 
-    // Process all transactions, both income and expenses
-    for (var transaction in widget.transactions) {
-      final category = transaction.category;
-      final amount =
-          transaction.amount.abs(); // Use absolute value for chart size
+    // Process only expense transactions (negative amounts)
+    for (var expense in widget.expenses) {
+      if (expense.amount < 0) {
+        // Only expenses
+        final category = expense.category.name;
+        final amount = expense.amount.abs().toDouble();
 
-      if (transactionsByCategory.containsKey(category)) {
-        transactionsByCategory[category] =
-            transactionsByCategory[category]! + amount;
-      } else {
-        transactionsByCategory[category] = amount;
+        if (expensesByCategory.containsKey(category)) {
+          expensesByCategory[category] = expensesByCategory[category]! + amount;
+        } else {
+          expensesByCategory[category] = amount;
+        }
       }
     }
 
-    final colorMap = {
-      'House': const Color(0xFF5cbdb9),
-      'Food': const Color.fromARGB(255, 233, 125, 117),
-      'Travel': const Color.fromARGB(255, 214, 138, 228),
-      'Shopping': Colors.pink,
-      'Job': Colors.blue,
-      // Add more categories as needed
-    };
+    // If no expenses, return empty list
+    if (expensesByCategory.isEmpty) {
+      return [];
+    }
 
     // Convert to list format needed for pie chart
     final data =
-        transactionsByCategory.entries.toList().asMap().entries.map((entry) {
+        expensesByCategory.entries.toList().asMap().entries.map((entry) {
       final index = entry.key;
-      final category = entry.value.key;
+      final categoryName = entry.value.key;
       final amount = entry.value.value;
-      final title = '0${index + 1}'; // Creates ID numbers
+      final title = '0${index + 1}';
+
+      // Get the actual category object to access color
+      final category = widget.expenses
+          .firstWhere((e) => e.category.name == categoryName)
+          .category;
 
       return {
         'title': title,
-        'category': category,
+        'category': categoryName,
         'value': amount,
-        'color': colorMap[category] ??
-            Colors.grey, // Default to grey if no color defined
+        'color': Color(category.color),
       };
     }).toList();
 
@@ -159,9 +144,10 @@ class _Badge extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black,
+            color: Colors.grey.withAlpha((0.1 * 255).toInt()),
+            spreadRadius: 1,
             blurRadius: 3,
-            offset: const Offset(0, 1),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
