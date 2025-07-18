@@ -1,4 +1,5 @@
 import 'package:finance_tracker/screens/learn/learn.dart';
+import 'package:finance_tracker/screens/login/login.dart';
 import 'package:finance_tracker/screens/savings/views/savings.dart';
 import 'package:flutter/material.dart';
 
@@ -173,7 +174,9 @@ class MoreScreen extends StatelessWidget {
                       icon: Icons.login,
                       title: 'Login',
                       subtitle: '',
-                      onTap: () {}, // Placeholder for login action
+                      onTap: () {
+                        _navigateToScreen(context, const LoginPage());
+                      },
                     ),
                     _buildActionItem(
                       context: context,
